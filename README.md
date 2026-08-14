@@ -54,8 +54,8 @@ notification APIs.
 
 - `PrintScreen.cs` — C# source code
 - `Build.ps1` — compilation script
+- `PrintScreen.ps1` — source PowerShell implementation
 - `PrintScreen.exe` — compiled Windows application
-- `PrintScreen.ps1` — original PowerShell implementation
 
 If capturing, clipboard access, or notifications fail, the application displays
 an error dialog containing the relevant message.
