@@ -52,6 +52,9 @@ The script uses the C# compiler included with the Windows .NET Framework and
 creates `PrintScreen.exe` in the project directory. No NuGet packages or .NET
 SDK installation are required.
 
+The build also generates `PrintScreen.ico` from `PrintScreen.png` and embeds it
+in the executable. To change the application icon, replace the PNG and rebuild.
+
 ## Requirements
 
 - Windows 10 or Windows 11
@@ -65,6 +68,7 @@ notification APIs.
 - `PrintScreen.cs` — C# source code
 - `Build.ps1` — compilation script
 - `PrintScreen.ps1` — source PowerShell implementation
+- `PrintScreen.png` — source image for the application icon
 - `PrintScreen.ico` — application icon (also required beside the PowerShell script)
 - `PrintScreen.exe` — compiled Windows application
 
