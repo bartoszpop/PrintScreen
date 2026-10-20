@@ -42,9 +42,10 @@ the original `PrintScreen.ps1` script.
 
 ## Building
 
-Run the build script from PowerShell:
+Install Node.js (including npm), then run from PowerShell:
 
 ```powershell
+npm ci
 .\Build.ps1
 ```
 
@@ -52,8 +53,12 @@ The script uses the C# compiler included with the Windows .NET Framework and
 creates `PrintScreen.exe` in the project directory. No NuGet packages or .NET
 SDK installation are required.
 
-The build also generates `PrintScreen.ico` from `PrintScreen.png` and embeds it
-in the executable. To change the application icon, replace the PNG and rebuild.
+The build renders `PRTSCR.svg` using resvg and generates
+one multi-resolution `PrintScreen.ico` for both the application and notifications.
+It contains 16, 20, 24, 32, 48, 64, 128, and 256-pixel versions rendered directly
+from the SVG and is embedded in the executable. To change the icon, edit the
+SVG and rebuild. Install Helvetica Neue to use its specified typeface; otherwise
+the SVG falls back to Helvetica or Arial. Node.js is needed only for building.
 
 ## Requirements
 
@@ -68,8 +73,9 @@ notification APIs.
 - `PrintScreen.cs` — C# source code
 - `Build.ps1` — compilation script
 - `PrintScreen.ps1` — source PowerShell implementation
-- `PrintScreen.png` — source image for the application icon
-- `PrintScreen.ico` — application icon (also required beside the PowerShell script)
+- `PRTSCR.svg` — source image for the application and notification icons
+- `Build-Icons.cjs` — multi-resolution ICO generator
+- `PrintScreen.ico` — application and notification icon (required beside the PowerShell script)
 - `PrintScreen.exe` — compiled Windows application
 
 The notification registration is stored at

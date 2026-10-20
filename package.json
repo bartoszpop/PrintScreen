@@ -1,0 +1,7 @@
+{
+  "private": true,
+  "description": "SVG rendering dependency for the PrintScreen icon build",
+  "devDependencies": {
+    "@resvg/resvg-js": "2.6.2"
+  }
+}

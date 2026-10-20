@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256" role="img" aria-labelledby="title">
+  <title id="title">Print Screen key — PRT SCR</title>
+  <rect x="7" y="7" width="242" height="242" rx="37" fill="none" stroke="black" stroke-width="13"/>
+  <g fill="black" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-weight="700" font-size="78" text-anchor="middle">
+    <text x="128" y="119">PRT</text>
+    <text x="128" y="194">SCR</text>
+  </g>
+</svg>
