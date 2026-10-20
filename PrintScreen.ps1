@@ -12,6 +12,49 @@
       - displayed in a Windows toast notification
 #>
 
+param(
+    [string]$EditUri
+)
+
+$ErrorActionPreference = 'Stop'
+
+if ($PSBoundParameters.ContainsKey('EditUri')) {
+    try {
+        $action = [Uri]::new($EditUri, [UriKind]::Absolute)
+        if ($action.Scheme -ne 'printscreen-edit') {
+            throw 'Invalid PrintScreen editing URI.'
+        }
+        $image = [Uri]::new($EditUri.Substring('printscreen-edit:'.Length), [UriKind]::Absolute)
+        if (-not $image.IsFile -or $image.IsUnc -or $image.Query -or $image.Fragment) {
+            throw 'Invalid PrintScreen editing URI.'
+        }
+        $file = $image.LocalPath
+        if ([IO.Path]::GetExtension($file) -ine '.png') {
+            throw 'Only PNG screenshots can be edited.'
+        }
+        if (-not [IO.File]::Exists($file)) {
+            throw "The screenshot no longer exists: $file"
+        }
+        $paint = Join-Path ([Environment]::GetFolderPath('System')) 'mspaint.exe'
+        if (-not [IO.File]::Exists($paint)) {
+            $paint = Join-Path $env:LOCALAPPDATA 'Microsoft\WindowsApps\mspaint.exe'
+        }
+        if (-not [IO.File]::Exists($paint)) {
+            throw 'Microsoft Paint is not installed.'
+        }
+        Start-Process -FilePath $paint -ArgumentList "`"$file`""
+    }
+    catch {
+        Add-Type -AssemblyName System.Windows.Forms
+        [System.Windows.Forms.MessageBox]::Show(
+            $_.Exception.Message, 'PrintScreen',
+            [System.Windows.Forms.MessageBoxButtons]::OK,
+            [System.Windows.Forms.MessageBoxIcon]::Error
+        ) | Out-Null
+    }
+    return
+}
+
 # Enable per-monitor DPI awareness before accessing screen coordinates.
 Add-Type @"
 using System;
@@ -21,6 +64,9 @@ public static class DpiAwareness
 {
     [DllImport("user32.dll")]
     public static extern bool SetProcessDpiAwarenessContext(IntPtr dpiContext);
+
+    [DllImport("shell32.dll", CharSet = CharSet.Unicode)]
+    public static extern int SetCurrentProcessExplicitAppUserModelID(string appId);
 }
 "@
 
@@ -29,6 +75,35 @@ public static class DpiAwareness
 
 Add-Type -AssemblyName System.Drawing
 Add-Type -AssemblyName System.Windows.Forms
+
+# Register the same per-user notification identity as the compiled application.
+$appId = 'BartoszPop.PrintScreen'
+$iconFolder = Join-Path $env:LOCALAPPDATA 'PrintScreen'
+$iconPath = Join-Path $iconFolder 'PrintScreen.ico'
+New-Item -ItemType Directory -Force -Path $iconFolder | Out-Null
+Copy-Item -LiteralPath "$PSScriptRoot\PrintScreen.ico" -Destination $iconPath -Force
+
+$identityKey = "HKCU:\Software\Classes\AppUserModelId\$appId"
+New-Item -Path $identityKey -Force | Out-Null
+New-ItemProperty -Path $identityKey -Name DisplayName -Value 'PrintScreen' -PropertyType String -Force | Out-Null
+New-ItemProperty -Path $identityKey -Name IconUri -Value $iconPath -PropertyType String -Force | Out-Null
+
+$protocolKey = 'HKCU:\Software\Classes\printscreen-edit'
+New-Item -Path $protocolKey -Force | Out-Null
+Set-Item -LiteralPath $protocolKey -Value 'URL:PrintScreen Edit with Paint'
+New-ItemProperty -Path $protocolKey -Name 'URL Protocol' -Value '' -PropertyType String -Force | Out-Null
+$commandKey = Join-Path $protocolKey 'shell\open\command'
+New-Item -Path $commandKey -Force | Out-Null
+$hostExe = Join-Path $PSHOME 'powershell.exe'
+if (-not (Test-Path -LiteralPath $hostExe)) {
+    $hostExe = Join-Path $PSHOME 'pwsh.exe'
+}
+$command = "`"$hostExe`" -NoProfile -Sta -WindowStyle Hidden -ExecutionPolicy Bypass -File `"$PSCommandPath`" -EditUri `"%1`""
+Set-Item -LiteralPath $commandKey -Value $command
+
+[System.Runtime.InteropServices.Marshal]::ThrowExceptionForHR(
+    [DpiAwareness]::SetCurrentProcessExplicitAppUserModelID($appId)
+)
 
 # ---------------------------------------------------------------------------
 # Configuration
@@ -100,6 +175,7 @@ $imageUri = [System.Uri]::new($file).AbsoluteUri
 # Escape XML-sensitive characters.
 $escapedFile = [System.Security.SecurityElement]::Escape($file)
 $escapedImageUri = [System.Security.SecurityElement]::Escape($imageUri)
+$escapedEditUri = [System.Security.SecurityElement]::Escape("printscreen-edit:$imageUri")
 
 $toastXml = @"
 <toast activationType="protocol" launch="$escapedImageUri">
@@ -112,6 +188,11 @@ $toastXml = @"
                 src="$escapedImageUri" />
         </binding>
     </visual>
+    <actions>
+        <action content="Edit with Paint"
+                activationType="protocol"
+                arguments="$escapedEditUri" />
+    </actions>
 </toast>
 "@
 
@@ -125,7 +206,6 @@ $toast = New-Object Windows.UI.Notifications.ToastNotification $xml
 $toast.Tag = 'Screenshot'
 $toast.Group = 'PrintScreen'
 
-$appId = '{1AC14E77-02E7-4E5D-B744-2EB1AE5198B7}\WindowsPowerShell\v1.0\powershell.exe'
 $group = 'PrintScreen'
 
 $history = [Windows.UI.Notifications.ToastNotificationManager]::History

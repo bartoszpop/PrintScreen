@@ -50,6 +50,7 @@ $sourceImage.Dispose()
 & $compiler /nologo /target:winexe /optimize+ /platform:anycpu `
     /out:"$PSScriptRoot\PrintScreen.exe" `
     /win32icon:"$iconFile" `
+    /resource:"$iconFile",PrintScreen.ico `
     /reference:System.dll `
     /reference:System.Drawing.dll `
     /reference:System.Windows.Forms.dll `
