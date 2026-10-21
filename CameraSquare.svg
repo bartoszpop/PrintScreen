@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256" role="img" aria-label="Camera with framing corners">
+  <g fill="none" stroke="#000" stroke-width="8" stroke-linecap="square" stroke-linejoin="miter">
+    <path d="M34 89 V40 H83"/>
+    <path d="M173 40 H222 V89"/>
+    <path d="M34 167 V216 H83"/>
+    <path d="M173 216 H222 V167"/>
+  </g>
+  <path fill="#000" d="M73 78 H89 L99 64 Q103 59 110 59 H146 Q153 59 157 64 L167 78 H183 Q198 78 198 93 V169 Q198 184 183 184 H73 Q58 184 58 169 V93 Q58 78 73 78 Z"/>
+  <circle cx="128" cy="129" r="32" fill="none" stroke="#fff" stroke-width="8"/>
+  <circle cx="178" cy="102" r="8" fill="#fff"/>
+</svg>

@@ -3,7 +3,7 @@ const path = require('node:path');
 const { Resvg } = require('@resvg/resvg-js');
 
 const sizes = [16, 20, 24, 32, 48, 64, 128, 256];
-const source = fs.readFileSync(path.join(__dirname, 'PRTSCR.svg'), 'utf8');
+const source = fs.readFileSync(path.join(__dirname, 'CameraSquare.svg'), 'utf8');
 const images = sizes.map(size => new Resvg(source, {
     fitTo: { mode: 'width', value: size },
     font: { loadSystemFonts: true, defaultFontFamily: 'Arial' }
