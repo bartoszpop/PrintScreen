@@ -79,13 +79,13 @@ notification APIs.
 - `PrintScreen.exe` — compiled Windows application
 
 The notification registration is stored at
-`HKEY_CURRENT_USER\Software\Classes\AppUserModelId\BartoszPop.PrintScreen`,
-and its icon is stored at `%LOCALAPPDATA%\PrintScreen\PrintScreen.ico` so Windows
+`HKEY_CURRENT_USER\Software\Classes\AppUserModelId\io.github.bartoszpop.printscreen`,
+and its icon is stored at `%LOCALAPPDATA%\io.github.bartoszpop.printscreen\PrintScreen.ico` so Windows
 can display it after the program exits. Existing notifications sent under
 Windows PowerShell keep their old branding; newly captured screenshots use
 the PrintScreen identity.
 
-The app also registers `HKEY_CURRENT_USER\Software\Classes\printscreen-edit`
+The app also registers `HKEY_CURRENT_USER\Software\Classes\io.github.bartoszpop.printscreen`
 to handle the Paint button after it exits. Keep the executable (or the
 PowerShell script) at its current location while its notifications are in use.
 Running either implementation refreshes the handler to point to that copy.

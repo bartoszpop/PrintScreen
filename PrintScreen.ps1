@@ -17,14 +17,15 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
+$editProtocol = 'io.github.bartoszpop.printscreen'
 
 if ($PSBoundParameters.ContainsKey('EditUri')) {
     try {
         $action = [Uri]::new($EditUri, [UriKind]::Absolute)
-        if ($action.Scheme -ne 'printscreen-edit') {
+        if ($action.Scheme -ne $editProtocol) {
             throw 'Invalid PrintScreen editing URI.'
         }
-        $image = [Uri]::new($EditUri.Substring('printscreen-edit:'.Length), [UriKind]::Absolute)
+        $image = [Uri]::new($EditUri.Substring($editProtocol.Length + 1), [UriKind]::Absolute)
         if (-not $image.IsFile -or $image.IsUnc -or $image.Query -or $image.Fragment) {
             throw 'Invalid PrintScreen editing URI.'
         }
@@ -77,8 +78,8 @@ Add-Type -AssemblyName System.Drawing
 Add-Type -AssemblyName System.Windows.Forms
 
 # Register the same per-user notification identity as the compiled application.
-$appId = 'BartoszPop.PrintScreen'
-$iconFolder = Join-Path $env:LOCALAPPDATA 'PrintScreen'
+$appId = 'io.github.bartoszpop.printscreen'
+$iconFolder = Join-Path $env:LOCALAPPDATA $appId
 $iconPath = Join-Path $iconFolder 'PrintScreen.ico'
 New-Item -ItemType Directory -Force -Path $iconFolder | Out-Null
 Copy-Item -LiteralPath "$PSScriptRoot\PrintScreen.ico" -Destination $iconPath -Force
@@ -88,7 +89,7 @@ New-Item -Path $identityKey -Force | Out-Null
 New-ItemProperty -Path $identityKey -Name DisplayName -Value 'PrintScreen' -PropertyType String -Force | Out-Null
 New-ItemProperty -Path $identityKey -Name IconUri -Value $iconPath -PropertyType String -Force | Out-Null
 
-$protocolKey = 'HKCU:\Software\Classes\printscreen-edit'
+$protocolKey = "HKCU:\Software\Classes\$editProtocol"
 New-Item -Path $protocolKey -Force | Out-Null
 Set-Item -LiteralPath $protocolKey -Value 'URL:PrintScreen Edit with Paint'
 New-ItemProperty -Path $protocolKey -Name 'URL Protocol' -Value '' -PropertyType String -Force | Out-Null
@@ -175,7 +176,7 @@ $imageUri = [System.Uri]::new($file).AbsoluteUri
 # Escape XML-sensitive characters.
 $escapedFile = [System.Security.SecurityElement]::Escape($file)
 $escapedImageUri = [System.Security.SecurityElement]::Escape($imageUri)
-$escapedEditUri = [System.Security.SecurityElement]::Escape("printscreen-edit:$imageUri")
+$escapedEditUri = [System.Security.SecurityElement]::Escape("${editProtocol}:$imageUri")
 
 $toastXml = @"
 <toast activationType="protocol" launch="$escapedImageUri">

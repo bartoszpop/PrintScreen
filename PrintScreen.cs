@@ -14,8 +14,8 @@ internal static class Program
 {
     private static readonly IntPtr PerMonitorAwareV2 = new IntPtr(-4);
     private const string ToastGroup = "PrintScreen";
-    private const string AppId = "BartoszPop.PrintScreen";
-    private const string EditProtocol = "printscreen-edit";
+    private const string AppId = "io.github.bartoszpop.printscreen";
+    private const string EditProtocol = "io.github.bartoszpop.printscreen";
 
     [DllImport("user32.dll")]
     private static extern bool SetProcessDpiAwarenessContext(IntPtr value);
@@ -77,7 +77,7 @@ internal static class Program
     {
         string iconFolder = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-            "PrintScreen");
+            AppId);
         Directory.CreateDirectory(iconFolder);
         string iconPath = Path.Combine(iconFolder, "PrintScreen.ico");
 
