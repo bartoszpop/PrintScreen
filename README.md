@@ -1,7 +1,9 @@
 # PrintScreen
 
-A small Windows screenshot utility written in C#. It starts faster than the
-original PowerShell script because it runs as a compiled executable.
+A small Windows screenshot utility that captures the monitor under your mouse
+cursor and shows a toast notification with an **Edit with Paint** button.
+Written in C#, it starts faster than the original PowerShell script because
+it runs as a compiled executable.
 
 When launched, the app:
 
@@ -19,6 +21,8 @@ Click **Edit with Paint** below the notification text to open the saved PNG
 in Microsoft Paint. Clicking the notification itself still opens the image in
 your default viewer. Editing does not capture another screenshot or change
 the clipboard.
+
+![PrintScreen toast notification with a screenshot preview and an Edit with Paint button](Screenshot.png)
 
 ## Usage
 
@@ -39,6 +43,11 @@ Screenshot_yyyy-MM-dd_HH-mm-ss-fff.png
 
 You can assign `PrintScreen.exe` to a keyboard shortcut or use it in place of
 the original `PrintScreen.ps1` script.
+
+You can also configure your mouse software to run `PrintScreen.exe` as the
+action for an auxiliary mouse button. This provides a one-button alternative
+to Snipping Tool (**Windows + Shift + S**) when you want to capture the entire
+monitor under the cursor.
 
 ## Building
 
